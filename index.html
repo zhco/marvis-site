@@ -6,36 +6,33 @@
     <title>GPT 单词本 - 基于 GPT-4 的英语单词深度学习工具</title>
     <style>
         :root {
-            --bg: #0a0a1a;
-            --card: rgba(255,255,255,0.04);
-            --border: rgba(255,255,255,0.08);
-            --accent: #6366f1;
-            --accent2: #a78bfa;
-            --text: #e2e8f0;
-            --text2: #94a3b8;
-            --green: #34d399;
-            --red: #f87171;
+            --bg: #0d1117;
+            --card: #161b22;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --muted: #8b949e;
+            --sky: #0ea5e9;
+            --sky-dark: #0284c7;
+            --green: #22c55e;
+            --yellow: #eab308;
         }
         * { margin:0;padding:0;box-sizing:border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: var(--bg);
             color: var(--text);
-            line-height: 1.6;
-            overflow-x: hidden;
+            line-height: 1.5;
         }
         
-        /* Nav */
         nav {
             position: fixed; top:0; width:100%; z-index:100;
-            background: rgba(10,10,26,0.8); backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border); padding: 16px 0;
+            background: rgba(13,17,23,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border); padding: 14px 0;
         }
         nav .inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
-        nav .logo { font-weight: 700; font-size: 1.15rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        nav .btn { font-size: 0.85rem; padding: 8px 20px; }
+        nav .logo { font-weight: 700; font-size: 1.1rem; color: var(--sky); }
         
-        sections { padding-top: 80px; }
+        sections { padding-top: 64px; }
         
         /* Hero */
         .hero {
@@ -44,161 +41,283 @@
         }
         .hero-text { flex: 1; min-width: 300px; }
         .hero-text .badge {
-            display: inline-block; background: rgba(99,102,241,0.15); color: var(--accent2);
-            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;
+            display: inline-block; background: rgba(14,165,233,0.15); color: var(--sky);
+            padding: 5px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;
         }
-        .hero-text h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
-        .hero-text h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-text p { color: var(--text2); font-size: 1.05rem; margin-bottom: 28px; max-width: 480px; }
+        .hero-text h1 { font-size: 2.6rem; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+        .hero-text h1 span { color: var(--sky); }
+        .hero-text p { color: var(--muted); font-size: 1.05rem; margin-bottom: 28px; max-width: 480px; }
         .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-        
-        /* Phone mockup */
-        .hero-phone { flex: 0 0 300px; }
-        .phone-frame {
-            width: 280px; margin: 0 auto; background: #1e1e2e; border-radius: 36px;
-            border: 3px solid #333; padding: 12px; box-shadow: 0 25px 60px rgba(99,102,241,0.2);
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 13px 30px; border-radius: 14px; font-weight: 700; font-size: 0.95rem;
+            text-decoration: none; transition: all 0.25s; cursor: pointer; border: none;
         }
-        .phone-screen {
-            background: #fff; border-radius: 24px; padding: 20px 16px; height: 420px;
-            overflow: hidden; color: #1e293b; position: relative;
-        }
-        .phone-screen .word {
-            font-size: 2rem; font-weight: 800; text-align: center; margin-top: 30px;
-            color: var(--accent);
-        }
-        .phone-screen .phonetic {
-            text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;
-        }
-        .phone-screen .meaning {
-            background: #f1f5f9; border-radius: 12px; padding: 12px; font-size: 0.85rem;
-            margin-bottom: 8px; color: #475569;
-        }
-        .phone-screen .example {
-            background: #eef2ff; border-radius: 12px; padding: 12px; font-size: 0.8rem;
-            color: #4338ca; font-style: italic;
-        }
-        .phone-screen .dots {
-            display: flex; justify-content: center; gap: 6px; margin-top: 20px;
-        }
-        .phone-screen .dots span { width: 6px; height: 6px; border-radius: 50%; background: #cbd5e1; }
-        .phone-screen .dots span.active { background: var(--accent); width: 18px; border-radius: 3px; }
-        .phone-screen .nav-bar {
-            position: absolute; bottom: 0; left: 0; right: 0; display: flex;
-            justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0;
-        }
-        .phone-screen .nav-bar button {
-            background: none; border: none; font-size: 0.7rem; color: #94a3b8; cursor: pointer; padding: 4px 8px;
-        }
-        .phone-screen .nav-bar button.active { color: var(--accent); font-weight: 700; }
-        
-        /* Demo Section */
-        .demo {
-            max-width: 1100px; margin: 0 auto; padding: 60px 24px;
-        }
-        .demo h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; }
-        .demo .sub { text-align: center; color: var(--text2); margin-bottom: 36px; }
-        .demo-container {
-            display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap;
-            justify-content: center;
-        }
-        .demo-app {
-            width: 340px; background: #1a1a2e; border-radius: 24px;
-            border: 1px solid var(--border); overflow: hidden;
-        }
-        .demo-header {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            padding: 16px 20px; color: #fff; font-weight: 700;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .demo-body { padding: 20px; min-height: 360px; }
-        .word-card {
-            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px;
-            text-align: center; border: 1px solid var(--border);
-        }
-        .word-card .big-word { font-size: 2.2rem; font-weight: 800; color: var(--accent2); margin-bottom: 4px; }
-        .word-card .ipa { color: var(--text2); font-size: 0.9rem; margin-bottom: 16px; }
-        .word-card .def { font-size: 0.9rem; color: var(--text2); margin-bottom: 6px; }
-        .word-card .sent { font-size: 0.85rem; color: var(--text); font-style: italic; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 12px; }
-        
-        .quiz-area { margin-top: 16px; }
-        .quiz-area .q { font-size: 0.85rem; color: var(--text2); margin-bottom: 10px; }
-        .quiz-area .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .quiz-area .opt {
-            padding: 10px; border-radius: 10px; border: 1px solid var(--border);
-            background: transparent; color: var(--text); cursor: pointer;
-            font-size: 0.85rem; transition: all 0.2s;
-        }
-        .quiz-area .opt:hover { border-color: var(--accent); background: rgba(99,102,241,0.1); }
-        .quiz-area .opt.correct { border-color: var(--green); background: rgba(52,211,153,0.15); color: var(--green); }
-        .quiz-area .opt.wrong { border-color: var(--red); background: rgba(248,113,113,0.15); color: var(--red); }
-        .quiz-area .feedback { margin-top: 12px; font-size: 0.8rem; min-height: 20px; }
-        
-        .demo-controls {
-            display: flex; gap: 10px; margin-top: 16px; justify-content: center;
-        }
-        .demo-controls button {
-            padding: 10px 24px; border-radius: 12px; border: 1px solid var(--border);
-            background: var(--card); color: var(--text); cursor: pointer; font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .demo-controls button:hover { border-color: var(--accent); }
-        .demo-controls button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        .btn-sky { background: var(--sky); color: #fff; }
+        .btn-sky:hover { background: var(--sky-dark); transform: translateY(-2px); }
+        .btn-outline { border: 1.5px solid rgba(255,255,255,0.15); color: var(--text); background: transparent; }
+        .btn-outline:hover { border-color: var(--sky); }
         
         /* Features */
         .features {
-            max-width: 1100px; margin: 0 auto; padding: 60px 24px;
+            max-width: 1100px; margin: 0 auto; padding: 40px 24px 60px;
         }
-        .features h2 { font-size: 1.8rem; text-align: center; margin-bottom: 36px; }
+        .features h2 { font-size: 1.6rem; text-align: center; margin-bottom: 32px; }
         .feature-grid {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px;
         }
         .feature-card {
             background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-            padding: 28px 24px; transition: transform 0.2s, border-color 0.2s;
+            padding: 26px 22px; transition: border-color 0.2s;
         }
-        .feature-card:hover { transform: translateY(-4px); border-color: var(--accent); }
-        .feature-icon { font-size: 2rem; margin-bottom: 12px; }
-        .feature-card h3 { font-size: 1rem; margin-bottom: 8px; }
-        .feature-card p { color: var(--text2); font-size: 0.85rem; }
+        .feature-card:hover { border-color: var(--sky); }
+        .feature-icon { font-size: 1.8rem; margin-bottom: 10px; }
+        .feature-card h3 { font-size: 0.95rem; margin-bottom: 6px; }
+        .feature-card p { color: var(--muted); font-size: 0.83rem; }
+        
+        /* Demo Section */
+        .demo-section {
+            max-width: 1100px; margin: 0 auto; padding: 40px 24px 60px;
+        }
+        .demo-section h2 { font-size: 1.6rem; text-align: center; margin-bottom: 6px; }
+        .demo-section .sub { text-align: center; color: var(--muted); margin-bottom: 32px; font-size: 0.9rem; }
+        
+        .demo-wrapper {
+            display: flex; gap: 40px; align-items: flex-start; justify-content: center; flex-wrap: wrap;
+        }
+        
+        /* Phone */
+        .phone {
+            width: 360px; background: #1a1a2e; border-radius: 32px; border: 3px solid #333;
+            padding: 10px; box-shadow: 0 25px 60px rgba(14,165,233,0.1);
+            flex-shrink: 0;
+        }
+        .phone-screen {
+            background: #f3f4f6; border-radius: 24px; overflow: hidden;
+            display: flex; flex-direction: column; height: 640px;
+        }
+        /* Phone header */
+        .ph-header {
+            background: var(--sky); color: #fff; padding: 12px 14px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .ph-header h3 { font-size: 0.9rem; font-weight: 700; }
+        .ph-header .badge-sm {
+            font-size: 0.65rem; background: var(--yellow); color: #713f12;
+            padding: 2px 8px; border-radius: 10px; font-weight: 600;
+        }
+        .ph-header .icons { display: flex; gap: 6px; }
+        .ph-header .icons button {
+            background: rgba(255,255,255,0.2); border: none; color: #fff;
+            width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 0.85rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ph-body { flex: 1; overflow-y: auto; padding: 12px; }
+        .ph-body.dark { background: var(--bg); color: var(--text); }
+        
+        /* Daily word card */
+        .daily-card {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #fff;
+            border-radius: 16px; padding: 18px; margin-bottom: 14px; cursor: pointer;
+        }
+        .daily-card .dw-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; opacity: 0.8; }
+        .daily-card .dw-word { font-size: 1.5rem; font-weight: 800; }
+        .daily-card .dw-desc { font-size: 0.78rem; margin-top: 4px; opacity: 0.9; }
+        
+        /* Alphabet filter */
+        .letter-row { display: flex; gap: 3px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+        .letter-row button {
+            min-width: 30px; height: 30px; border-radius: 8px; border: none;
+            font-size: 0.72rem; font-weight: 600; cursor: pointer; transition: all 0.15s;
+            background: #e5e7eb; color: #4b5563;
+        }
+        .letter-row button:first-child { min-width: 42px; }
+        .letter-row button.active { background: var(--sky); color: #fff; }
+        .dark .letter-row button { background: #1c2128; color: #9ca3af; }
+        .dark .letter-row button.active { background: var(--sky); color: #fff; }
+        
+        /* Word grid */
+        .word-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .word-item {
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+            padding: 10px 12px; cursor: pointer; transition: all 0.15s;
+        }
+        .word-item:active { transform: scale(0.97); }
+        .word-item .wi-word { font-weight: 700; font-size: 0.88rem; color: #111827; }
+        .word-item .wi-desc { font-size: 0.7rem; color: #9ca3af; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .dark .word-item { background: var(--card); border-color: var(--border); }
+        .dark .word-item .wi-word { color: var(--text); }
+        
+        .level-tag {
+            font-size: 0.6rem; padding: 1px 5px; border-radius: 4px; font-weight: 600;
+        }
+        .level-cet4 { background: #dcfce7; color: #15803d; }
+        .level-cet6 { background: #dbeafe; color: #1d4ed8; }
+        .level-tem4 { background: #ffedd5; color: #c2410c; }
+        .level-tem8 { background: #fee2e2; color: #b91c1c; }
+        
+        /* Word Detail */
+        .detail-header { display: flex; align-items: center; gap: 8px; padding: 0 0 12px; }
+        .detail-header .back-btn { background: none; border: none; color: #fff; cursor: pointer; font-size: 1.2rem; padding: 2px 4px; }
+        .detail-card {
+            background: #fff; border-radius: 16px; padding: 20px; border: 1px solid #e5e7eb;
+        }
+        .detail-card .d-word { font-size: 1.8rem; font-weight: 800; color: #111827; }
+        .detail-card .d-ipa { font-size: 1rem; color: var(--sky); font-family: monospace; margin: 4px 0 12px; }
+        .detail-card .d-section h4 { font-size: 0.85rem; color: var(--sky); font-weight: 700; margin-bottom: 6px; margin-top: 12px; }
+        .detail-card .d-section p, .detail-card .d-section li { font-size: 0.82rem; color: #374151; line-height: 1.6; }
+        .detail-card .d-section ul, .detail-card .d-section ol { padding-left: 18px; }
+        .dark .detail-card { background: var(--card); border-color: var(--border); }
+        .dark .detail-card .d-word { color: var(--text); }
+        .dark .detail-card .d-section p, .dark .detail-card .d-section li { color: var(--muted); }
+        
+        .speak-btn {
+            background: #e0f2fe; border: none; color: var(--sky);
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        
+        /* Bottom nav */
+        .ph-nav {
+            background: #fff; border-top: 1px solid #e5e7eb;
+            display: flex; justify-content: space-around; padding: 6px 0;
+        }
+        .ph-nav button {
+            background: none; border: none; cursor: pointer; padding: 6px 14px;
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            font-size: 0.65rem; color: #9ca3af; transition: color 0.15s;
+        }
+        .ph-nav button.active { color: var(--sky); }
+        .ph-nav button .nav-icon { font-size: 1.15rem; }
+        .dark .ph-nav { background: var(--card); border-color: var(--border); }
+        
+        /* Study plan */
+        .plan-card {
+            background: #e0f2fe; border-radius: 14px; padding: 14px; margin-bottom: 14px;
+            color: #0369a1;
+        }
+        .plan-card h4 { font-size: 0.9rem; font-weight: 700; }
+        .plan-card p { font-size: 0.75rem; margin-top: 2px; }
+        .dark .plan-card { background: rgba(14,165,233,0.1); color: #38bdf8; }
+        
+        .level-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 14px; }
+        .level-opt {
+            padding: 10px 8px; border-radius: 12px; border: 2px solid #e5e7eb;
+            background: #fff; text-align: center; cursor: pointer; font-size: 0.72rem;
+        }
+        .level-opt.sel { border-color: var(--sky); background: #e0f2fe; }
+        .level-opt .lo-name { font-weight: 700; color: #111827; }
+        .level-opt .lo-count { font-size: 0.65rem; color: #9ca3af; margin-top: 2px; }
+        .dark .level-opt { background: var(--card); border-color: var(--border); }
+        .dark .level-opt .lo-name { color: var(--text); }
+        .dark .level-opt.sel { border-color: var(--sky); background: rgba(14,165,233,0.1); }
+        
+        .count-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 14px; }
+        .count-opt {
+            padding: 10px; border-radius: 12px; border: 2px solid #e5e7eb;
+            background: #fff; text-align: center; cursor: pointer; font-size: 0.75rem; font-weight: 700;
+        }
+        .count-opt.sel { border-color: var(--sky); background: #e0f2fe; }
+        .count-opt .co-sub { font-size: 0.6rem; color: #9ca3af; font-weight: 400; }
+        .dark .count-opt { background: var(--card); border-color: var(--border); color: var(--text); }
+        .dark .count-opt.sel { border-color: var(--sky); background: rgba(14,165,233,0.1); }
+        
+        .start-btn {
+            width: 100%; padding: 12px; border-radius: 12px; border: none; background: var(--sky); color: #fff;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer;
+        }
+        .start-btn:disabled { background: #e5e7eb; color: #9ca3af; cursor: not-allowed; }
+        .dark .start-btn:disabled { background: #1c2128; }
+        
+        /* Daily study */
+        .prog-card {
+            background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 14px; border: 1px solid #e5e7eb;
+        }
+        .prog-card .prog-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 6px; color: #6b7280; }
+        .prog-bar { height: 6px; background: #e5e7eb; border-radius: 3px; margin-bottom: 8px; }
+        .prog-bar .fill { height: 6px; background: var(--sky); border-radius: 3px; transition: width 0.3s; }
+        .dark .prog-card { background: var(--card); border-color: var(--border); }
+        .dark .prog-bar { background: #1c2128; }
+        
+        .study-word {
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 12px;
+            padding: 10px 12px; display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 6px; cursor: pointer;
+        }
+        .study-word.mastered { border-color: #bbf7d0; background: #f0fdf4; }
+        .study-word .sw-left { display: flex; align-items: center; gap: 8px; flex: 1; }
+        .study-word .sw-idx { font-size: 0.7rem; color: #9ca3af; width: 16px; }
+        .study-word .sw-word { font-weight: 700; font-size: 0.85rem; color: #111827; }
+        .check-btn {
+            width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer;
+            font-size: 0.7rem; display: flex; align-items: center; justify-content: center;
+        }
+        .check-btn.off { background: #e5e7eb; color: #9ca3af; }
+        .check-btn.on { background: var(--green); color: #fff; }
+        .dark .study-word { background: var(--card); border-color: var(--border); }
+        .dark .study-word.mastered { border-color: #166534; background: rgba(34,197,94,0.08); }
+        .dark .study-word .sw-word { color: var(--text); }
+        
+        .finish-btn {
+            width: 100%; padding: 12px; border-radius: 12px; border: none;
+            background: var(--sky); color: #fff; font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        
+        .complete-msg {
+            background: #f0fdf4; border-radius: 14px; padding: 18px; text-align: center;
+        }
+        .complete-msg .cm-icon { font-size: 2rem; margin-bottom: 8px; }
+        .complete-msg .cm-title { font-weight: 700; color: #15803d; font-size: 0.95rem; }
+        .dark .complete-msg { background: rgba(34,197,94,0.1); }
+        
+        /* Favorites empty */
+        .empty-state { text-align: center; padding: 60px 20px; color: #9ca3af; }
+        .empty-state .es-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        
+        /* Settings */
+        .set-card {
+            background: #fff; border-radius: 14px; border: 1px solid #e5e7eb; overflow: hidden; margin-bottom: 14px;
+        }
+        .set-row {
+            padding: 13px 14px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #e5e7eb; cursor: pointer; font-size: 0.82rem;
+        }
+        .set-row:last-child { border-bottom: none; }
+        .set-row .sr-stat { font-size: 1.2rem; font-weight: 800; color: var(--sky); }
+        .set-row.danger { color: #ef4444; }
+        .dark .set-card { background: var(--card); border-color: var(--border); }
+        .dark .set-row { border-color: var(--border); }
+        
+        .toggle-sw {
+            width: 44px; height: 24px; border-radius: 12px; background: #e5e7eb; position: relative;
+            transition: background 0.2s;
+        }
+        .toggle-sw.on { background: var(--sky); }
+        .toggle-sw::after {
+            content: ''; width: 18px; height: 18px; border-radius: 50%; background: #fff;
+            position: absolute; top: 3px; left: 3px; transition: left 0.2s;
+        }
+        .toggle-sw.on::after { left: 23px; }
         
         /* CTA */
         .cta {
-            max-width: 700px; margin: 60px auto 80px; padding: 0 24px; text-align: center;
+            max-width: 700px; margin: 40px auto 60px; padding: 0 24px; text-align: center;
         }
-        .cta-card {
-            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(167,139,250,0.1));
-            border: 1px solid rgba(99,102,241,0.3); border-radius: 24px; padding: 50px 40px;
-        }
-        .cta-card h2 { font-size: 1.8rem; margin-bottom: 12px; }
-        .cta-card p { color: var(--text2); margin-bottom: 24px; }
-        .btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            padding: 14px 32px; border-radius: 14px; font-weight: 700; font-size: 0.95rem;
-            text-decoration: none; transition: all 0.25s; cursor: pointer; border: none;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: #fff; box-shadow: 0 8px 30px rgba(99,102,241,0.3);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.4); }
-        .btn-outline {
-            border: 1.5px solid rgba(255,255,255,0.2); color: var(--text); background: transparent;
-        }
-        .btn-outline:hover { border-color: var(--accent); }
         
         footer {
-            text-align: center; padding: 30px; color: var(--text2); font-size: 0.8rem;
+            text-align: center; padding: 24px; color: var(--muted); font-size: 0.78rem;
             border-top: 1px solid var(--border);
         }
         
         @media (max-width: 768px) {
-            .hero { flex-direction: column-reverse; text-align: center; padding-top: 40px; }
+            .hero { flex-direction: column; text-align: center; padding-top: 30px; }
             .hero-text h1 { font-size: 2rem; }
             .hero-btns { justify-content: center; }
             .hero-text p { max-width: 100%; }
-            .phone-frame { width: 240px; }
-            .phone-screen { height: 360px; }
+            .phone { width: 320px; }
+            .phone-screen { height: 560px; }
+            .demo-wrapper { gap: 24px; }
         }
     </style>
 </head>
@@ -206,7 +325,7 @@
     <nav>
         <div class="inner">
             <div class="logo">GPT 单词本</div>
-            <a href="#download" class="btn btn-primary" style="padding:8px 20px;font-size:0.85rem;">下载 APK</a>
+            <a href="https://marvis-site.pages.dev/gpt-wordbook-v2.apk" class="btn btn-sky" style="padding:9px 20px;font-size:0.82rem;">下载 APK</a>
         </div>
     </nav>
     
@@ -214,29 +333,12 @@
     <!-- Hero -->
     <div class="hero">
         <div class="hero-text">
-            <div class="badge">GPT-4 驱动</div>
-            <h1><span>GPT 单词本</span><br>深度学习 8000+ 单词</h1>
-            <p>基于 GPT-4 大模型的 Android 英语单词学习应用，包含完整音标、真人发音和智能测验，让背单词不再枯燥。</p>
+            <div class="badge">GPT-4 驱动 · 13,750 词汇</div>
+            <h1><span>GPT 单词本</span><br>深度学习英语单词</h1>
+            <p>基于 GPT-4 大模型的 Android 英语单词学习应用，覆盖四六级+专四专八，含 IPA 音标与有道真人发音。</p>
             <div class="hero-btns">
-                <a href="https://marvis-site.pages.dev/gpt-wordbook-v2.apk" class="btn btn-primary">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    下载 APK
-                </a>
+                <a href="https://marvis-site.pages.dev/gpt-wordbook-v2.apk" class="btn btn-sky">下载 APK (12MB)</a>
                 <a href="#demo" class="btn btn-outline">在线演示</a>
-            </div>
-        </div>
-        <div class="hero-phone">
-            <div class="phone-frame">
-                <div class="phone-screen">
-                    <div class="word" id="demoWord">serendipity</div>
-                    <div class="phonetic">/ˌser.ənˈdɪp.ə.ti/</div>
-                    <div class="meaning">n. 意外发现美好事物的能力；机缘巧合</div>
-                    <div class="example">"Finding that café was pure serendipity."</div>
-                    <div class="dots"><span class="active"></span><span></span><span></span></div>
-                    <div class="nav-bar">
-                        <button class="active">学习</button><button>测验</button><button>收藏</button>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -252,138 +354,360 @@
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🔊</div>
-                <h3>真人发音 + 音标</h3>
-                <p>标准美式发音和 IPA 音标，听说读写全面覆盖</p>
+                <h3>有道真人发音</h3>
+                <p>接入有道词典真人发音 + IPA 音标 + 原生 TTS 双引擎</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📚</div>
-                <h3>8000+ 词汇量</h3>
-                <p>覆盖高考、四级、六级、考研、雅思、托福核心词汇</p>
+                <h3>13,750 词汇量</h3>
+                <p>覆盖 CET-4/CET-6/TEM-4/TEM-8，四六级覆盖率 99.9%+</p>
             </div>
             <div class="feature-card">
-                <div class="feature-icon">✅</div>
-                <h3>智能测验</h3>
-                <p>根据遗忘曲线自动安排复习，选择题测验加深记忆</p>
+                <div class="feature-icon">📅</div>
+                <h3>每日学习计划</h3>
+                <p>自定义词库范围与每日单词量，自动安排学习进度</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3>学习统计</h3>
-                <p>可视化学习进度，已学/未学/掌握一目了然</p>
+                <h3>词汇覆盖率报告</h3>
+                <p>可视化展示词库对四六级/专四专八的覆盖程度</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🌙</div>
-                <h3>暗黑模式</h3>
-                <p>护眼暗色主题，晚上背单词不刺眼</p>
+                <h3>深色模式</h3>
+                <p>完整深色主题支持，夜间学习不伤眼</p>
             </div>
         </div>
     </div>
     
     <!-- Demo -->
-    <div class="demo" id="demo">
+    <div class="demo-section" id="demo">
         <h2>在线演示</h2>
-        <p class="sub">点击操作，体验核心功能</p>
-        <div class="demo-container">
-            <div class="demo-app">
-                <div class="demo-header">
-                    <span>GPT 单词本</span>
-                    <span style="font-size:0.75rem;opacity:0.8;">演示模式</span>
-                </div>
-                <div class="demo-body" id="demoBody">
-                    <div class="word-card">
-                        <div class="big-word" id="quizWord">ephemeral</div>
-                        <div class="ipa">/ɪˈfem.ər.əl/</div>
-                        <div class="def">adj. 短暂的；转瞬即逝的</div>
-                        <div class="sent">"The beauty of cherry blossoms is ephemeral."</div>
-                    </div>
-                    <div class="quiz-area" id="quizArea">
-                        <div class="q">选择正确的释义：</div>
-                        <div class="opts" id="quizOpts"></div>
-                        <div class="feedback" id="quizFeedback"></div>
-                    </div>
-                </div>
-                <div class="demo-controls">
-                    <button onclick="nextWord()" class="primary">下一个单词</button>
-                    <button onclick="resetDemo()">重新开始</button>
+        <p class="sub">点击操作下方模拟器，体验完整应用界面</p>
+        <div class="demo-wrapper">
+            <div class="phone">
+                <div class="phone-screen" id="phoneScreen">
+                    <!-- content injected by JS -->
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- CTA -->
-    <div class="cta" id="download">
-        <div class="cta-card">
-            <h2>开始你的单词学习之旅</h2>
-            <p>免费下载，无需注册，即刻使用</p>
-            <a href="https://marvis-site.pages.dev/gpt-wordbook-v2.apk" class="btn btn-primary" style="font-size:1.05rem; padding:16px 40px;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                下载 APK (12MB)
-            </a>
-            <p style="margin-top:12px;font-size:0.8rem;color:var(--text2);">支持 Android 8.0+</p>
-        </div>
+    <div class="cta">
+        <a href="https://marvis-site.pages.dev/gpt-wordbook-v2.apk" class="btn btn-sky" style="font-size:1.05rem; padding:15px 38px;">
+            下载 APK (12MB) · Android 8.0+
+        </a>
     </div>
     </sections>
     
-    <footer>
-        GPT 单词本 · Powered by GPT-4 · Built with ❤️
-    </footer>
+    <footer>GPT 单词本 v2.0 · Powered by GPT-4 · 数据来源 github.com/Ceelog/DictionaryByGPT4</footer>
     
     <script>
-        const words = [
-            { word: "ephemeral", ipa: "/ɪˈfem.ər.əl/", def: "短暂的；转瞬即逝的", sent: "The beauty of cherry blossoms is ephemeral.", opts: ["短暂的", "永恒的", "复杂的", "清晰的"], ans: 0 },
-            { word: "ubiquitous", ipa: "/juːˈbɪk.wɪ.təs/", def: "无处不在的", sent: "Smartphones have become ubiquitous in modern life.", opts: ["罕见的", "无处不在的", "昂贵的", "过时的"], ans: 1 },
-            { word: "eloquent", ipa: "/ˈel.ə.kwənt/", def: "雄辩的；有口才的", sent: "She gave an eloquent speech at the ceremony.", opts: ["沉默的", "雄辩的", "困惑的", "愤怒的"], ans: 1 },
-            { word: "meticulous", ipa: "/məˈtɪk.jə.ləs/", def: "一丝不苟的；细致的", sent: "He is meticulous about his work.", opts: ["粗心的", "细致的", "快速的", "懒惰的"], ans: 1 },
-            { word: "resilient", ipa: "/rɪˈzɪl.i.ənt/", def: "有弹性的；坚韧的", sent: "Children are often more resilient than adults.", opts: ["脆弱的", "坚韧的", "迟钝的", "犹豫的"], ans: 1 },
-            { word: "serendipity", ipa: "/ˌser.ənˈdɪp.ə.ti/", def: "意外发现美好事物的能力", sent: "Finding that café was pure serendipity.", opts: ["意外发现", "计划", "失败", "困惑"], ans: 0 },
+        const demoWords = [
+            { word:'abandon',ipa:'əˈbændən',level:'cet4',content:'### 释义\n**v.** 放弃；遗弃；沉溺于\n\n### 例句\n- They had to **abandon** the plan due to bad weather.\n- He **abandoned** himself to despair.' },
+            { word:'serendipity',ipa:'ˌserənˈdɪpəti',level:'tem8',content:'### 释义\n**n.** 意外发现美好事物的能力；机缘巧合\n\n### 例句\n- Finding that café was pure **serendipity**.\n\n### 词源\n源自波斯童话《Serendip的三位王子》，三位王子总能在旅途中意外发现宝藏。' },
+            { word:'ubiquitous',ipa:'juːˈbɪkwɪtəs',level:'cet6',content:'### 释义\n**adj.** 无处不在的；普遍存在的\n\n### 例句\n- Smartphones have become **ubiquitous** in modern life.\n\n### 词根\nubi- (where) + -quitous → 无论在哪儿都存在的' },
+            { word:'resilient',ipa:'rɪˈzɪliənt',level:'cet6',content:'### 释义\n**adj.** 有弹性的；能迅速恢复的；坚韧的\n\n### 例句\n- Children are often more **resilient** than adults.\n- The economy proved remarkably **resilient**.' },
+            { word:'ephemeral',ipa:'ɪˈfemərəl',level:'tem4',content:'### 释义\n**adj.** 短暂的；转瞬即逝的\n\n### 例句\n- The beauty of cherry blossoms is **ephemeral**.\n- Social media trends are often **ephemeral**.' },
+            { word:'eloquent',ipa:'ˈeləkwənt',level:'cet6',content:'### 释义\n**adj.** 雄辩的；有口才的；清楚表明的\n\n### 例句\n- She gave an **eloquent** speech at the ceremony.\n- The ruins are an **eloquent** reminder of the war.' },
+            { word:'meticulous',ipa:'məˈtɪkjələs',level:'tem4',content:'### 释义\n**adj.** 一丝不苟的；细致入微的\n\n### 例句\n- He is **meticulous** about his work.\n- The restoration required **meticulous** attention to detail.' },
+            { word:'diligent',ipa:'ˈdɪlɪdʒənt',level:'cet4',content:'### 释义\n**adj.** 勤奋的；勤勉的\n\n### 例句\n- She is a **diligent** student who always does her homework.\n- **Diligent** research led to the breakthrough.' },
         ];
         
-        let currentIdx = 0;
-        let answered = false;
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
         
-        function showWord(idx) {
-            const w = words[idx];
-            document.getElementById('quizWord').textContent = w.word;
-            document.querySelector('#demoBody .ipa').textContent = w.ipa;
-            document.querySelector('#demoBody .def').textContent = 'adj. ' + w.def;
-            document.querySelector('#demoBody .sent').textContent = '"' + w.sent + '"';
-            
-            const optsEl = document.getElementById('quizOpts');
-            optsEl.innerHTML = '';
-            w.opts.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'opt';
-                btn.textContent = opt;
-                btn.onclick = () => checkAnswer(i, w.ans);
-                optsEl.appendChild(btn);
-            });
-            document.getElementById('quizFeedback').textContent = '';
-            answered = false;
-        }
+        let currentTab = 'home';
+        let letterFilter = '';
+        let demoFavs = new Set(['serendipity','eloquent']);
+        let showDetail = false;
+        let curWord = null;
+        let studyView = 'plan'; // 'plan' or 'daily'
+        let studyMastered = {};
+        let selectedLevel = null;
+        let selectedCount = null;
+        let darkMode = false;
         
-        function checkAnswer(i, ans) {
-            if (answered) return;
-            answered = true;
-            const opts = document.querySelectorAll('#quizOpts .opt');
-            opts[ans].classList.add('correct');
-            if (i === ans) {
-                document.getElementById('quizFeedback').innerHTML = '<span style="color:#34d399;">✅ 正确！</span>';
+        function render() {
+            const screen = document.getElementById('phoneScreen');
+            if (showDetail && curWord) {
+                screen.innerHTML = renderDetail();
+                screen.className = 'phone-screen';
             } else {
-                opts[i].classList.add('wrong');
-                document.getElementById('quizFeedback').innerHTML = '<span style="color:#f87171;">❌ 再想想</span>';
+                screen.className = 'phone-screen' + (darkMode ? ' dark' : '');
+                screen.innerHTML = renderHeader() + renderBody() + renderNav();
             }
         }
         
-        function nextWord() {
-            currentIdx = (currentIdx + 1) % words.length;
-            showWord(currentIdx);
+        function renderHeader() {
+            return `
+            <div class="ph-header">
+                <h3>GPT 单词本</h3>
+                <div style="display:flex;align-items:center;gap:6px;">
+                    <span class="badge-sm">演示</span>
+                    <div class="icons">
+                        <button onclick="showDetail=false;curWord=null;render()" title="搜索">🔍</button>
+                        <button onclick="randomWord()" title="随机">🎲</button>
+                    </div>
+                </div>
+            </div>`;
         }
         
-        function resetDemo() {
-            currentIdx = 0;
-            showWord(0);
+        function renderBody() {
+            return `<div class="ph-body">${views[currentTab]()}</div>`;
         }
         
-        showWord(0);
+        function renderNav() {
+            const tabs = [
+                {id:'home',label:'单词本',icon:'📖'},
+                {id:'study',label:'学习',icon:'🎓'},
+                {id:'fav',label:'收藏',icon:'❤️'},
+                {id:'settings',label:'设置',icon:'⚙️'},
+            ];
+            return `<div class="ph-nav">${tabs.map(t => `
+                <button class="${currentTab===t.id?'active':''}" onclick="switchTab('${t.id}')">
+                    <span class="nav-icon">${t.icon}</span>${t.label}
+                </button>`).join('')}</div>`;
+        }
+        
+        function switchTab(id) {
+            currentTab = id;
+            if (id === 'study') studyView = 'plan';
+            if (id !== 'study') { selectedLevel = null; selectedCount = null; }
+            render();
+        }
+        
+        // HOME
+        function viewHome() {
+            const filtered = letterFilter
+                ? demoWords.filter(w => w.word.toUpperCase().startsWith(letterFilter))
+                : demoWords;
+            const daily = demoWords[new Date().getDate() % demoWords.length];
+            
+            return `
+            <div class="daily-card" onclick="openDetail('${daily.word}')">
+                <div class="dw-label">每日一词</div>
+                <div class="dw-word">${daily.word}</div>
+                <div class="dw-desc">${(daily.content||'').replace(/[#*\n]/g,'').substring(0,50)}...</div>
+            </div>
+            <div style="font-size:0.65rem;color:#9ca3af;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">按字母浏览</div>
+            <div class="letter-row">
+                <button class="${letterFilter===''?'active':''}" onclick="setLetter('')">全部</button>
+                ${letters.map(l=>`<button class="${letterFilter===l?'active':''}" onclick="setLetter('${l}')">${l}</button>`).join('')}
+            </div>
+            <div style="font-size:0.65rem;color:#9ca3af;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">${letterFilter?`以 "${letterFilter}" 开头的单词`:'热门单词'}</div>
+            <div class="word-grid">
+                ${filtered.map(w=>`
+                <div class="word-item" onclick="openDetail('${w.word}')">
+                    <div class="wi-word">${w.word} <span class="level-tag level-${w.level}">${levelLabel(w.level)}</span></div>
+                    <div class="wi-desc">${(w.content||'').replace(/[#*\n]/g,'').substring(0,25)}...</div>
+                </div>`).join('')}
+            </div>`;
+        }
+        
+        function levelLabel(l) { return {'cet4':'四级','cet6':'六级','tem4':'专四','tem8':'专八'}[l]||l; }
+        
+        function setLetter(l) { letterFilter = (letterFilter===l) ? '' : l; render(); }
+        
+        // STUDY
+        function viewStudy() {
+            if (studyView === 'plan') return viewStudyPlan();
+            return viewStudyDaily();
+        }
+        
+        function viewStudyPlan() {
+            const levels = [
+                {id:'cet4',label:'CET-4 四级',desc:'4 词'},
+                {id:'cet6',label:'CET-6 六级',desc:'3 词'},
+                {id:'tem4',label:'TEM-4 专四',desc:'2 词'},
+                {id:'tem8',label:'TEM-8 专八',desc:'1 词'},
+                {id:'all',label:'全部词汇',desc:'8 词'},
+            ];
+            const counts = [5,10,15,20];
+            const totalDays = selectedLevel && selectedCount ? Math.ceil(demoWords.length / selectedCount) : 0;
+            
+            return `
+            <div class="plan-card">
+                <h4>🎓 学习计划</h4>
+                <p>选择词库范围和每日学习量，系统会自动分配任务</p>
+            </div>
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;">选择词库</div>
+            <div class="level-grid">
+                ${levels.map(l=>`
+                <div class="level-opt ${selectedLevel===l.id?'sel':''}" onclick="selectLevel('${l.id}')">
+                    <div class="lo-name">${l.label}</div>
+                    <div class="lo-count">${l.desc}</div>
+                </div>`).join('')}
+            </div>
+            <div style="font-size:0.72rem;font-weight:600;margin-bottom:6px;">每日单词数</div>
+            <div class="count-grid">
+                ${counts.map(c=>`
+                <div class="count-opt ${selectedCount===c?'sel':''}" onclick="selectCount(${c})">
+                    <div>${c} 个/天</div>
+                    <div class="co-sub">${c<=10?'轻松':c<=15?'适中':'挑战'}</div>
+                </div>`).join('')}
+            </div>
+            ${selectedLevel&&selectedCount?`<div style="text-align:center;font-size:0.72rem;color:#6b7280;margin-bottom:10px;">预计 ${totalDays} 天完成</div>`:''}
+            <button class="start-btn" ${!selectedLevel||!selectedCount?'disabled':''} onclick="startStudy()">▶ 开始学习</button>`;
+        }
+        
+        function selectLevel(l) { selectedLevel = l; render(); }
+        function selectCount(c) { selectedCount = c; render(); }
+        
+        function startStudy() {
+            studyView = 'daily';
+            studyMastered = {};
+            render();
+        }
+        
+        function viewStudyDaily() {
+            const masteredCount = Object.values(studyMastered).filter(Boolean).length;
+            const dailyList = demoWords.slice(0, Math.min(selectedCount||5, demoWords.length));
+            const progress = Math.round(masteredCount / dailyList.length * 100);
+            
+            let html = `
+            <div class="prog-card">
+                <div class="prog-row"><span>第 1 天</span><span style="color:var(--sky);font-weight:700;">50%</span></div>
+                <div class="prog-bar"><div class="fill" style="width:50%"></div></div>
+                <div style="display:flex;justify-content:space-between;font-size:0.65rem;color:#9ca3af;">
+                    <span>今日: ${masteredCount}/${dailyList.length} (${progress}%)</span>
+                    <span style="color:#ef4444;cursor:pointer;" onclick="studyView='plan';render()">重置</span>
+                </div>
+            </div>`;
+            
+            dailyList.forEach((w,i)=>{
+                const m = studyMastered[w.word];
+                html += `
+                <div class="study-word ${m?'mastered':''}" onclick="openDetail('${w.word}')">
+                    <div class="sw-left">
+                        <span class="sw-idx">${i+1}</span>
+                        <span class="sw-word">${w.word}</span>
+                        <span class="level-tag level-${w.level}" style="display:inline-block;">${levelLabel(w.level)}</span>
+                    </div>
+                    <button class="check-btn ${m?'on':'off'}" onclick="event.stopPropagation();toggleMastered('${w.word}')">✓</button>
+                </div>`;
+            });
+            
+            if (progress === 100) {
+                html += '<div class="complete-msg"><div class="cm-icon">🎉</div><div class="cm-title">恭喜完成全部学习计划！</div></div>';
+            } else if (progress >= 60) {
+                html += '<button class="finish-btn" onclick="studyView=\'plan\';render()">完成今日学习 →</button>';
+            }
+            
+            return html;
+        }
+        
+        function toggleMastered(w) {
+            studyMastered[w] = !studyMastered[w];
+            render();
+        }
+        
+        // FAVORITES
+        function viewFavorites() {
+            const favs = demoWords.filter(w => demoFavs.has(w.word));
+            if (!favs.length) return `<div class="empty-state"><div class="es-icon">❤️</div><p>暂无收藏单词</p><p style="font-size:0.7rem;margin-top:4px;">点击单词详情页的星标来收藏</p></div>`;
+            return `
+            <div style="font-size:0.65rem;color:#9ca3af;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;">已收藏 ${favs.length} 个单词</div>
+            ${favs.map(w=>`
+            <div class="study-word" onclick="openDetail('${w.word}')">
+                <div class="sw-left">
+                    <span class="sw-word">${w.word}</span>
+                    <span class="level-tag level-${w.level}" style="display:inline-block;">${levelLabel(w.level)}</span>
+                    <span style="font-size:0.65rem;color:#9ca3af;">${(w.content||'').substring(0,25).replace(/[#*\n]/g,'')}...</span>
+                </div>
+                <span style="color:#eab308;font-size:1rem;cursor:pointer;" onclick="event.stopPropagation();toggleFav('${w.word}')">⭐</span>
+            </div>`).join('')}`;
+        }
+        
+        function toggleFav(w) {
+            if (demoFavs.has(w)) demoFavs.delete(w); else demoFavs.add(w);
+            render();
+        }
+        
+        // SETTINGS
+        function viewSettings() {
+            return `
+            <div class="set-card">
+                <div class="set-row" onclick="alert('词汇覆盖率: CET-4 99.96%, CET-6 99.95%')">
+                    <span>词库总量</span>
+                    <span class="sr-stat">${demoWords.length}</span>
+                </div>
+                <div class="set-row">
+                    <span>已收藏</span>
+                    <span class="sr-stat">${demoFavs.size}</span>
+                </div>
+            </div>
+            <div class="set-card">
+                <div class="set-row" onclick="darkMode=!darkMode;render()">
+                    <span>深色模式</span>
+                    <div class="toggle-sw ${darkMode?'on':''}"></div>
+                </div>
+                <div class="set-row" style="color:#b45309;">
+                    <span>激活授权</span>
+                    <span style="font-size:0.75rem;">演示模式</span>
+                </div>
+                <div class="set-row" style="color:var(--sky);">导出学习记录</div>
+                <div class="set-row" style="color:var(--sky);">导入学习记录</div>
+                <div class="set-row danger">清空浏览历史</div>
+                <div class="set-row danger">清空收藏</div>
+            </div>
+            <div style="text-align:center;font-size:0.65rem;color:#9ca3af;margin-top:12px;">
+                <p>GPT 单词本 v2.0.0</p>
+                <p style="margin-top:2px;">数据来源: github.com/Ceelog/DictionaryByGPT4</p>
+            </div>`;
+        }
+        
+        // WORD DETAIL
+        function renderDetail() {
+            const w = curWord;
+            const fav = demoFavs.has(w.word);
+            return `
+            <div class="ph-header">
+                <button class="back-btn" onclick="showDetail=false;curWord=null;render()">←</button>
+                <h3>${w.word}</h3>
+                <span style="font-size:1.2rem;cursor:pointer;" onclick="toggleFav('${w.word}')">${fav?'⭐':'☆'}</span>
+            </div>
+            <div class="ph-body">
+                <div class="detail-card">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+                        <span class="d-word">${w.word}</span>
+                        <span class="level-tag level-${w.level}" style="display:inline-block;">${levelLabel(w.level)}</span>
+                        <button class="speak-btn" onclick="alert('🔊 发音: /${w.ipa}/ (演示模式无音频)')">🔊</button>
+                    </div>
+                    <div class="d-ipa">/${w.ipa}/</div>
+                    <div class="d-section">${parseMarkdownContent(w.content)}</div>
+                </div>
+                <div style="text-align:center;font-size:0.6rem;color:#d1d5db;margin-top:8px;">&lt; 左右滑动切换单词 &gt;</div>
+            </div>`;
+        }
+        
+        function parseMarkdownContent(md) {
+            return md
+                .replace(/^### (.*$)/gm,'<h4>$1</h4>')
+                .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+                .replace(/^- (.+$)/gm,'<li>$1</li>')
+                .replace(/(<li>.*<\/li>\n?)+/g,'<ul>$&</ul>')
+                .replace(/\n\n/g,'<br>')
+                .replace(/\n/g,'<br>');
+        }
+        
+        function openDetail(word) {
+            curWord = demoWords.find(w => w.word === word);
+            showDetail = true;
+            // Auto-mark as mastered in study mode
+            if (currentTab === 'study' && studyView === 'daily') {
+                studyMastered[word] = true;
+            }
+            render();
+        }
+        
+        function randomWord() {
+            const w = demoWords[Math.floor(Math.random() * demoWords.length)];
+            openDetail(w.word);
+        }
+        
+        const views = { home: viewHome, study: viewStudy, fav: viewFavorites, settings: viewSettings };
+        
+        render();
     </script>
 </body>
 </html>

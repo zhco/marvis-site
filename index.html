@@ -3,166 +3,387 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marvis - 你的AI助手</title>
+    <title>GPT 单词本 - 基于 GPT-4 的英语单词深度学习工具</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #0a0a1a;
+            --card: rgba(255,255,255,0.04);
+            --border: rgba(255,255,255,0.08);
+            --accent: #6366f1;
+            --accent2: #a78bfa;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --green: #34d399;
+            --red: #f87171;
+        }
+        * { margin:0;padding:0;box-sizing:border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            min-height: 100vh;
-            background: linear-gradient(160deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
-            display: flex;
-            align-items: center;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Nav */
+        nav {
+            position: fixed; top:0; width:100%; z-index:100;
+            background: rgba(10,10,26,0.8); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border); padding: 16px 0;
+        }
+        nav .inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; justify-content: space-between; align-items: center; }
+        nav .logo { font-weight: 700; font-size: 1.15rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        nav .btn { font-size: 0.85rem; padding: 8px 20px; }
+        
+        sections { padding-top: 80px; }
+        
+        /* Hero */
+        .hero {
+            max-width: 1100px; margin: 0 auto; padding: 80px 24px 60px;
+            display: flex; align-items: center; gap: 60px; flex-wrap: wrap;
+        }
+        .hero-text { flex: 1; min-width: 300px; }
+        .hero-text .badge {
+            display: inline-block; background: rgba(99,102,241,0.15); color: var(--accent2);
+            padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; margin-bottom: 20px;
+        }
+        .hero-text h1 { font-size: 2.8rem; font-weight: 800; line-height: 1.2; margin-bottom: 16px; }
+        .hero-text h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero-text p { color: var(--text2); font-size: 1.05rem; margin-bottom: 28px; max-width: 480px; }
+        .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+        
+        /* Phone mockup */
+        .hero-phone { flex: 0 0 300px; }
+        .phone-frame {
+            width: 280px; margin: 0 auto; background: #1e1e2e; border-radius: 36px;
+            border: 3px solid #333; padding: 12px; box-shadow: 0 25px 60px rgba(99,102,241,0.2);
+        }
+        .phone-screen {
+            background: #fff; border-radius: 24px; padding: 20px 16px; height: 420px;
+            overflow: hidden; color: #1e293b; position: relative;
+        }
+        .phone-screen .word {
+            font-size: 2rem; font-weight: 800; text-align: center; margin-top: 30px;
+            color: var(--accent);
+        }
+        .phone-screen .phonetic {
+            text-align: center; color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;
+        }
+        .phone-screen .meaning {
+            background: #f1f5f9; border-radius: 12px; padding: 12px; font-size: 0.85rem;
+            margin-bottom: 8px; color: #475569;
+        }
+        .phone-screen .example {
+            background: #eef2ff; border-radius: 12px; padding: 12px; font-size: 0.8rem;
+            color: #4338ca; font-style: italic;
+        }
+        .phone-screen .dots {
+            display: flex; justify-content: center; gap: 6px; margin-top: 20px;
+        }
+        .phone-screen .dots span { width: 6px; height: 6px; border-radius: 50%; background: #cbd5e1; }
+        .phone-screen .dots span.active { background: var(--accent); width: 18px; border-radius: 3px; }
+        .phone-screen .nav-bar {
+            position: absolute; bottom: 0; left: 0; right: 0; display: flex;
+            justify-content: space-around; padding: 10px 0; border-top: 1px solid #e2e8f0;
+        }
+        .phone-screen .nav-bar button {
+            background: none; border: none; font-size: 0.7rem; color: #94a3b8; cursor: pointer; padding: 4px 8px;
+        }
+        .phone-screen .nav-bar button.active { color: var(--accent); font-weight: 700; }
+        
+        /* Demo Section */
+        .demo {
+            max-width: 1100px; margin: 0 auto; padding: 60px 24px;
+        }
+        .demo h2 { font-size: 1.8rem; text-align: center; margin-bottom: 8px; }
+        .demo .sub { text-align: center; color: var(--text2); margin-bottom: 36px; }
+        .demo-container {
+            display: flex; gap: 30px; align-items: flex-start; flex-wrap: wrap;
             justify-content: center;
-            padding: 20px;
-            color: #e0e0e0;
         }
-        .card {
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(30px);
-            border-radius: 28px;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 50px 40px;
-            max-width: 680px;
-            width: 100%;
-            text-align: center;
+        .demo-app {
+            width: 340px; background: #1a1a2e; border-radius: 24px;
+            border: 1px solid var(--border); overflow: hidden;
         }
-        .avatar {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 24px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.35);
+        .demo-header {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            padding: 16px 20px; color: #fff; font-weight: 700;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .avatar svg { width: 50px; height: 50px; }
-        h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            background: linear-gradient(135deg, #a78bfa, #60a5fa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .demo-body { padding: 20px; min-height: 360px; }
+        .word-card {
+            background: rgba(255,255,255,0.05); border-radius: 16px; padding: 24px;
+            text-align: center; border: 1px solid var(--border);
         }
-        .subtitle { font-size: 0.9rem; color: #94a3b8; margin-bottom: 32px; }
+        .word-card .big-word { font-size: 2.2rem; font-weight: 800; color: var(--accent2); margin-bottom: 4px; }
+        .word-card .ipa { color: var(--text2); font-size: 0.9rem; margin-bottom: 16px; }
+        .word-card .def { font-size: 0.9rem; color: var(--text2); margin-bottom: 6px; }
+        .word-card .sent { font-size: 0.85rem; color: var(--text); font-style: italic; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-top: 12px; }
+        
+        .quiz-area { margin-top: 16px; }
+        .quiz-area .q { font-size: 0.85rem; color: var(--text2); margin-bottom: 10px; }
+        .quiz-area .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .quiz-area .opt {
+            padding: 10px; border-radius: 10px; border: 1px solid var(--border);
+            background: transparent; color: var(--text); cursor: pointer;
+            font-size: 0.85rem; transition: all 0.2s;
+        }
+        .quiz-area .opt:hover { border-color: var(--accent); background: rgba(99,102,241,0.1); }
+        .quiz-area .opt.correct { border-color: var(--green); background: rgba(52,211,153,0.15); color: var(--green); }
+        .quiz-area .opt.wrong { border-color: var(--red); background: rgba(248,113,113,0.15); color: var(--red); }
+        .quiz-area .feedback { margin-top: 12px; font-size: 0.8rem; min-height: 20px; }
+        
+        .demo-controls {
+            display: flex; gap: 10px; margin-top: 16px; justify-content: center;
+        }
+        .demo-controls button {
+            padding: 10px 24px; border-radius: 12px; border: 1px solid var(--border);
+            background: var(--card); color: var(--text); cursor: pointer; font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        .demo-controls button:hover { border-color: var(--accent); }
+        .demo-controls button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+        
+        /* Features */
         .features {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 36px;
+            max-width: 1100px; margin: 0 auto; padding: 60px 24px;
         }
-        .feature-item {
-            background: rgba(255,255,255,0.04);
-            border-radius: 16px;
-            padding: 24px 16px;
-            border: 1px solid rgba(255,255,255,0.06);
-            transition: transform 0.2s, background 0.2s;
+        .features h2 { font-size: 1.8rem; text-align: center; margin-bottom: 36px; }
+        .feature-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
         }
-        .feature-item:hover {
-            transform: translateY(-4px);
-            background: rgba(255,255,255,0.08);
+        .feature-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+            padding: 28px 24px; transition: transform 0.2s, border-color 0.2s;
         }
-        .feature-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 12px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .feature-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .feature-icon { font-size: 2rem; margin-bottom: 12px; }
+        .feature-card h3 { font-size: 1rem; margin-bottom: 8px; }
+        .feature-card p { color: var(--text2); font-size: 0.85rem; }
+        
+        /* CTA */
+        .cta {
+            max-width: 700px; margin: 60px auto 80px; padding: 0 24px; text-align: center;
         }
-        .feature-item span {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #cbd5e1;
+        .cta-card {
+            background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(167,139,250,0.1));
+            border: 1px solid rgba(99,102,241,0.3); border-radius: 24px; padding: 50px 40px;
         }
+        .cta-card h2 { font-size: 1.8rem; margin-bottom: 12px; }
+        .cta-card p { color: var(--text2); margin-bottom: 24px; }
         .btn {
-            display: inline-block;
-            padding: 14px 40px;
-            border-radius: 14px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: all 0.25s;
-            margin: 0 6px;
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 14px; font-weight: 700; font-size: 0.95rem;
+            text-decoration: none; transition: all 0.25s; cursor: pointer; border: none;
         }
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff; box-shadow: 0 8px 30px rgba(99,102,241,0.3);
         }
-        .btn-primary:hover {
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.45);
-            transform: translateY(-2px);
-        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.4); }
         .btn-outline {
-            border: 1.5px solid rgba(255,255,255,0.25);
-            color: #cbd5e1;
+            border: 1.5px solid rgba(255,255,255,0.2); color: var(--text); background: transparent;
         }
-        .btn-outline:hover {
-            border-color: rgba(255,255,255,0.5);
-            background: rgba(255,255,255,0.05);
-        }
+        .btn-outline:hover { border-color: var(--accent); }
+        
         footer {
-            margin-top: 36px;
-            font-size: 0.75rem;
-            color: #64748b;
+            text-align: center; padding: 30px; color: var(--text2); font-size: 0.8rem;
+            border-top: 1px solid var(--border);
         }
-        @media (max-width: 600px) {
-            .features { grid-template-columns: 1fr; }
-            .card { padding: 32px 20px; }
+        
+        @media (max-width: 768px) {
+            .hero { flex-direction: column-reverse; text-align: center; padding-top: 40px; }
+            .hero-text h1 { font-size: 2rem; }
+            .hero-btns { justify-content: center; }
+            .hero-text p { max-width: 100%; }
+            .phone-frame { width: 240px; }
+            .phone-screen { height: 360px; }
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="avatar">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
-                <line x1="9" y1="9" x2="9.01" y2="9"/>
-                <line x1="15" y1="9" x2="15.01" y2="9"/>
-            </svg>
+    <nav>
+        <div class="inner">
+            <div class="logo">GPT 单词本</div>
+            <a href="#download" class="btn btn-primary" style="padding:8px 20px;font-size:0.85rem;">下载 APK</a>
         </div>
-        <h1>Marvis</h1>
-        <p class="subtitle">你的云端智能助手，随时随地解决问题</p>
-
-        <div class="features">
-            <div class="feature-item">
-                <div class="feature-icon" style="background:rgba(102,126,234,0.15)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                    </svg>
-                </div>
-                <span>智能问答</span>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon" style="background:rgba(167,139,250,0.15)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
-                    </svg>
-                </div>
-                <span>云端部署</span>
-            </div>
-            <div class="feature-item">
-                <div class="feature-icon" style="background:rgba(96,165,250,0.15)">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9"/>
-                    </svg>
-                </div>
-                <span>全球加速</span>
+    </nav>
+    
+    <sections>
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero-text">
+            <div class="badge">GPT-4 驱动</div>
+            <h1><span>GPT 单词本</span><br>深度学习 8000+ 单词</h1>
+            <p>基于 GPT-4 大模型的 Android 英语单词学习应用，包含完整音标、真人发音和智能测验，让背单词不再枯燥。</p>
+            <div class="hero-btns">
+                <a href="https://marvis-site.pages.dev/gpt-wordbook-v2.apk" class="btn btn-primary">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    下载 APK
+                </a>
+                <a href="#demo" class="btn btn-outline">在线演示</a>
             </div>
         </div>
-
-        <div>
-            <a href="#" class="btn btn-primary">开始体验</a>
-            <a href="https://github.com/zhco/marvis-site" class="btn btn-outline">GitHub</a>
+        <div class="hero-phone">
+            <div class="phone-frame">
+                <div class="phone-screen">
+                    <div class="word" id="demoWord">serendipity</div>
+                    <div class="phonetic">/ˌser.ənˈdɪp.ə.ti/</div>
+                    <div class="meaning">n. 意外发现美好事物的能力；机缘巧合</div>
+                    <div class="example">"Finding that café was pure serendipity."</div>
+                    <div class="dots"><span class="active"></span><span></span><span></span></div>
+                    <div class="nav-bar">
+                        <button class="active">学习</button><button>测验</button><button>收藏</button>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <footer>Powered by Cloudflare Pages · 2026</footer>
     </div>
+    
+    <!-- Features -->
+    <div class="features">
+        <h2>核心功能</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🧠</div>
+                <h3>GPT-4 智能释义</h3>
+                <p>每个单词由 GPT-4 生成精准释义、例句和词根拆解，理解更深刻</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔊</div>
+                <h3>真人发音 + 音标</h3>
+                <p>标准美式发音和 IPA 音标，听说读写全面覆盖</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>8000+ 词汇量</h3>
+                <p>覆盖高考、四级、六级、考研、雅思、托福核心词汇</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✅</div>
+                <h3>智能测验</h3>
+                <p>根据遗忘曲线自动安排复习，选择题测验加深记忆</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>学习统计</h3>
+                <p>可视化学习进度，已学/未学/掌握一目了然</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🌙</div>
+                <h3>暗黑模式</h3>
+                <p>护眼暗色主题，晚上背单词不刺眼</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Demo -->
+    <div class="demo" id="demo">
+        <h2>在线演示</h2>
+        <p class="sub">点击操作，体验核心功能</p>
+        <div class="demo-container">
+            <div class="demo-app">
+                <div class="demo-header">
+                    <span>GPT 单词本</span>
+                    <span style="font-size:0.75rem;opacity:0.8;">演示模式</span>
+                </div>
+                <div class="demo-body" id="demoBody">
+                    <div class="word-card">
+                        <div class="big-word" id="quizWord">ephemeral</div>
+                        <div class="ipa">/ɪˈfem.ər.əl/</div>
+                        <div class="def">adj. 短暂的；转瞬即逝的</div>
+                        <div class="sent">"The beauty of cherry blossoms is ephemeral."</div>
+                    </div>
+                    <div class="quiz-area" id="quizArea">
+                        <div class="q">选择正确的释义：</div>
+                        <div class="opts" id="quizOpts"></div>
+                        <div class="feedback" id="quizFeedback"></div>
+                    </div>
+                </div>
+                <div class="demo-controls">
+                    <button onclick="nextWord()" class="primary">下一个单词</button>
+                    <button onclick="resetDemo()">重新开始</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- CTA -->
+    <div class="cta" id="download">
+        <div class="cta-card">
+            <h2>开始你的单词学习之旅</h2>
+            <p>免费下载，无需注册，即刻使用</p>
+            <a href="https://marvis-site.pages.dev/gpt-wordbook-v2.apk" class="btn btn-primary" style="font-size:1.05rem; padding:16px 40px;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                下载 APK (12MB)
+            </a>
+            <p style="margin-top:12px;font-size:0.8rem;color:var(--text2);">支持 Android 8.0+</p>
+        </div>
+    </div>
+    </sections>
+    
+    <footer>
+        GPT 单词本 · Powered by GPT-4 · Built with ❤️
+    </footer>
+    
+    <script>
+        const words = [
+            { word: "ephemeral", ipa: "/ɪˈfem.ər.əl/", def: "短暂的；转瞬即逝的", sent: "The beauty of cherry blossoms is ephemeral.", opts: ["短暂的", "永恒的", "复杂的", "清晰的"], ans: 0 },
+            { word: "ubiquitous", ipa: "/juːˈbɪk.wɪ.təs/", def: "无处不在的", sent: "Smartphones have become ubiquitous in modern life.", opts: ["罕见的", "无处不在的", "昂贵的", "过时的"], ans: 1 },
+            { word: "eloquent", ipa: "/ˈel.ə.kwənt/", def: "雄辩的；有口才的", sent: "She gave an eloquent speech at the ceremony.", opts: ["沉默的", "雄辩的", "困惑的", "愤怒的"], ans: 1 },
+            { word: "meticulous", ipa: "/məˈtɪk.jə.ləs/", def: "一丝不苟的；细致的", sent: "He is meticulous about his work.", opts: ["粗心的", "细致的", "快速的", "懒惰的"], ans: 1 },
+            { word: "resilient", ipa: "/rɪˈzɪl.i.ənt/", def: "有弹性的；坚韧的", sent: "Children are often more resilient than adults.", opts: ["脆弱的", "坚韧的", "迟钝的", "犹豫的"], ans: 1 },
+            { word: "serendipity", ipa: "/ˌser.ənˈdɪp.ə.ti/", def: "意外发现美好事物的能力", sent: "Finding that café was pure serendipity.", opts: ["意外发现", "计划", "失败", "困惑"], ans: 0 },
+        ];
+        
+        let currentIdx = 0;
+        let answered = false;
+        
+        function showWord(idx) {
+            const w = words[idx];
+            document.getElementById('quizWord').textContent = w.word;
+            document.querySelector('#demoBody .ipa').textContent = w.ipa;
+            document.querySelector('#demoBody .def').textContent = 'adj. ' + w.def;
+            document.querySelector('#demoBody .sent').textContent = '"' + w.sent + '"';
+            
+            const optsEl = document.getElementById('quizOpts');
+            optsEl.innerHTML = '';
+            w.opts.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(i, w.ans);
+                optsEl.appendChild(btn);
+            });
+            document.getElementById('quizFeedback').textContent = '';
+            answered = false;
+        }
+        
+        function checkAnswer(i, ans) {
+            if (answered) return;
+            answered = true;
+            const opts = document.querySelectorAll('#quizOpts .opt');
+            opts[ans].classList.add('correct');
+            if (i === ans) {
+                document.getElementById('quizFeedback').innerHTML = '<span style="color:#34d399;">✅ 正确！</span>';
+            } else {
+                opts[i].classList.add('wrong');
+                document.getElementById('quizFeedback').innerHTML = '<span style="color:#f87171;">❌ 再想想</span>';
+            }
+        }
+        
+        function nextWord() {
+            currentIdx = (currentIdx + 1) % words.length;
+            showWord(currentIdx);
+        }
+        
+        function resetDemo() {
+            currentIdx = 0;
+            showWord(0);
+        }
+        
+        showWord(0);
+    </script>
 </body>
 </html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的网站</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 500px;
+            width: 90%;
+        }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; font-weight: 700; }
+        p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 2rem; line-height: 1.6; }
+        .links { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .btn-primary { background: #fff; color: #667eea; }
+        .btn-outline { border: 2px solid rgba(255,255,255,0.6); color: #fff; }
+        footer { margin-top: 2rem; font-size: 0.85rem; opacity: 0.6; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hello World</h1>
+        <p>由 Marvis 生成的现代网页。<br>部署于 Cloudflare Pages / Vercel。</p>
+        <div class="links">
+            <a href="#" class="btn btn-primary">开始使用</a>
+            <a href="https://github.com" class="btn btn-outline">GitHub</a>
+        </div>
+        <footer>Powered by Marvis</footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+name: Push APK to main
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download APK
+        run: |
+          curl -L -o gpt-wordbook-v2.apk \
+            "https://github.com/zhco/gpt-wordbook/releases/download/v2.0.0/gpt-wordbook-v2.apk"
+      
+      - name: Push to main
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add gpt-wordbook-v2.apk
+          git commit -m "Add APK" || exit 0
+          git push

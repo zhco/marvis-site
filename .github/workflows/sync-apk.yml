@@ -2,15 +2,15 @@ name: Sync APK
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Download APK from gpt-wordbook
-        run: |
-          curl -L -o gpt-wordbook-v2.apk \
-            "https://github.com/zhco/gpt-wordbook/releases/download/v2.0.0/gpt-wordbook-v2.apk"
-      
+      - name: Download APK
+        run: curl -L -o gpt-wordbook-v2.apk "https://github.com/zhco/gpt-wordbook/releases/download/v2.0.0/gpt-wordbook-v2.apk"
       - name: Upload to Release
         uses: softprops/action-gh-release@v2
         with:

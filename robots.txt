@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://marvis-site.pages.dev/sitemap.xml
